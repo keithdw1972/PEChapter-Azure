@@ -12,14 +12,14 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "vm_group" {
-  name = var.resource_group_name
-  location = var.resource_location
+  name = "WebServices"
+  location = "uk south"
 }
 resource "azurerm_virtual_network" "vm_network" {
-  name                = var.network_name
+   name                = "WebServiceNetwork"
   location            = azurerm_resource_group.vm_group.location
   resource_group_name = azurerm_resource_group.vm_group.name
-  address_space       = [var.network_address]
+  address_space       = ["10.0.0.0/22"]
   #dns_servers         = ["10.0.0.4", "10.0.0.5"]
 
   #subnet {
@@ -39,10 +39,10 @@ resource "azurerm_virtual_network" "vm_network" {
 
 }
 resource "azurerm_subnet" "vm_subnet" {
-  name                 = var.subnet_name
+  name                 = "WebServiceSubnet"
   resource_group_name  = azurerm_resource_group.vm_group.name
   virtual_network_name = azurerm_virtual_network.vm_network.name
-  address_prefixes     = [var.subnet_address]
+  address_prefixes     = ["10.0.1.0/24"]
 
   #delegation {
     #name = "delegation"
@@ -55,7 +55,7 @@ resource "azurerm_subnet" "vm_subnet" {
 
 }
 resource "azurerm_network_interface" "network_interface" {
-  name                = var.vm_network_interface
+  name                = "WebServices-NI"
   location            = azurerm_resource_group.vm_group.location
   resource_group_name = azurerm_resource_group.vm_group.name
 
@@ -67,21 +67,21 @@ resource "azurerm_network_interface" "network_interface" {
 }
 
 resource "azurerm_windows_virtual_machine" "virtual_machine" {
-  name                = var.resource_name
+  name                = "virtual-machine"
   resource_group_name = azurerm_resource_group.vm_group.name
   location            = azurerm_resource_group.vm_group.location
-  size                = var.resource_size
-  admin_username      = var.admin_username
-  admin_password      = var.admin_username
+  size                = "Standard_B1s"
+  admin_username      = "adminuser"
+  admin_password      = "P@$$w0rd1234!"
   license_type = "Windows_Server"
   network_interface_ids = [
     azurerm_network_interface.network_interface.id
   ]
 
   os_disk {
-    caching               = "ReadOnly"
-    storage_account_type  = var.vm_disk_type
-    disk_size_gb          = var.vm_disk_size
+    caching              = "ReadOnly"
+    storage_account_type = "Standard_LRS"
+    disk_size_gb = "32"
   }
 
   source_image_reference {
@@ -96,7 +96,7 @@ resource "azurerm_windows_virtual_machine" "virtual_machine" {
     
   }
   tags = {
-    environment = var.vm_environment
+    environment = "production"
   }
 
 }
