@@ -86,5 +86,5 @@ variable "subnet_address" {
 variable "vm_network_interface" {
   description = "Name of vm ni"
   type        = string
-  default     = "Production"
+  default     = "WebServices-NI"
 }
